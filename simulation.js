@@ -1,673 +1,555 @@
-// simulation.js — полная логика виртуальной лаборатории
+/* Базовые стили */
 
-// ===== Вспомогательные функции для статистики (дублированы из main.js) =====
-const STATS_KEY = 'karyotyping_lab_stats';
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
 
-function getStats() {
-  try {
-    const raw = localStorage.getItem(STATS_KEY);
-    if (!raw) {
-      return { totalRuns: 0, correctDx: 0 };
-    }
-    const parsed = JSON.parse(raw);
-    return {
-      totalRuns: parsed.totalRuns || 0,
-      correctDx: parsed.correctDx || 0,
-    };
-  } catch {
-    return { totalRuns: 0, correctDx: 0 };
+body {
+  margin: 0;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  background-color: #0b1020;
+  color: #f3f4f6;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+img {
+  max-width: 100%;
+  display: block;
+}
+
+/* Шапка и навигация */
+
+.main-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1rem 2rem;
+  background: linear-gradient(90deg, #111827, #1f2937);
+  border-bottom: 1px solid #374151;
+}
+
+.logo-title h1 {
+  margin: 0;
+  font-size: 1.4rem;
+}
+
+.logo-title p {
+  margin: 0.2rem 0 0;
+  font-size: 0.9rem;
+  color: #9ca3af;
+}
+
+.main-nav a {
+  margin-left: 1rem;
+  padding: 0.4rem 0.8rem;
+  border-radius: 999px;
+  font-size: 0.95rem;
+}
+
+.main-nav a:hover {
+  background-color: #111827;
+}
+
+.main-nav a.active {
+  background-color: #2563eb;
+}
+
+/* Кнопки */
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 999px;
+  padding: 0.6rem 1.4rem;
+  border: none;
+  cursor: pointer;
+  font-weight: 500;
+  font-size: 0.95rem;
+}
+
+.btn-primary {
+  background: linear-gradient(135deg, #2563eb, #4f46e5);
+  color: #fff;
+}
+
+.btn-secondary {
+  background-color: #111827;
+  color: #e5e7eb;
+  border: 1px solid #4b5563;
+}
+
+.btn:hover {
+  filter: brightness(1.1);
+}
+
+/* Главная */
+
+.home-main {
+  padding: 2rem;
+}
+
+.hero {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2rem;
+  margin-bottom: 3rem;
+  align-items: center;
+}
+
+.hero-text {
+  flex: 1 1 280px;
+}
+
+.hero-text h2 {
+  font-size: 1.8rem;
+  margin-bottom: 0.8rem;
+}
+
+.hero-buttons {
+  margin-top: 1.5rem;
+  display: flex;
+  gap: 1rem;
+}
+
+.hero-visual {
+  flex: 1 1 260px;
+}
+
+.hero-lab-preview {
+  position: relative;
+  border-radius: 1rem;
+  overflow: hidden;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5);
+}
+
+.hero-lab-preview img {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+
+.hero-lab-overlay {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.hero-microscope {
+  position: absolute;
+  bottom: 5%;
+  right: 5%;
+  width: 28%;
+}
+
+.hero-incubator {
+  position: absolute;
+  bottom: 8%;
+  left: 8%;
+  width: 24%;
+}
+
+.hero-tube {
+  position: absolute;
+  bottom: 10%;
+  left: 45%;
+  width: 10%;
+}
+
+.home-features h2 {
+  margin-bottom: 1rem;
+}
+
+.features-grid {
+  display: grid;
+  gap: 1rem;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+}
+
+.feature-card {
+  background-color: #111827;
+  border-radius: 0.8rem;
+  padding: 1rem;
+  border: 1px solid #1f2937;
+}
+
+/* Теория */
+
+.theory-main {
+  padding: 2rem;
+}
+
+.theory-section {
+  background-color: #111827;
+  border-radius: 0.8rem;
+  padding: 1rem 1.5rem;
+  margin-bottom: 1.5rem;
+  border: 1px solid #1f2937;
+}
+
+.theory-grid {
+  display: grid;
+  gap: 1rem;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+}
+
+.theory-card {
+  background-color: #020617;
+  border-radius: 0.8rem;
+  padding: 1rem;
+  border: 1px solid #1f2937;
+}
+
+/* Симуляция: общая раскладка */
+
+.lab-main {
+  padding: 1.5rem;
+}
+
+.lab-toolbar {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1rem;
+  background-color: #111827;
+  border-radius: 0.8rem;
+  padding: 0.8rem 1rem;
+  border: 1px solid #1f2937;
+}
+
+.lab-toolbar .case-info p {
+  margin: 0;
+  font-size: 0.9rem;
+}
+
+.lab-layout {
+  display: grid;
+  grid-template-columns: minmax(220px, 260px) minmax(0, 1fr) minmax(220px, 260px);
+  gap: 1rem;
+}
+
+/* Боковые панели */
+
+.sidebar {
+  background-color: #111827;
+  border-radius: 0.8rem;
+  padding: 1rem;
+  border: 1px solid #1f2937;
+}
+
+.sidebar h3 {
+  margin-top: 0;
+}
+
+.inventory {
+  display: grid;
+  gap: 0.8rem;
+}
+
+.reagent {
+  background-color: #020617;
+  border-radius: 0.6rem;
+  padding: 0.5rem;
+  border: 1px solid #1f2937;
+  cursor: grab;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.reagent span {
+  font-size: 0.9rem;
+}
+
+.reagent img {
+  width: 34px;
+  height: 34px;
+  object-fit: contain;
+}
+
+/* Лабораторный стол */
+
+.lab-area {
+  background-color: #020617;
+  border-radius: 0.8rem;
+  padding: 0.8rem;
+  border: 1px solid #1f2937;
+  position: relative;
+}
+
+.lab-background img {
+  width: 100%;
+  border-radius: 0.6rem;
+  filter: brightness(0.6);
+}
+
+.workbench {
+  position: absolute;
+  inset: 0.8rem;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  grid-template-rows: 5fr 2fr;
+  gap: 0.8rem;
+  pointer-events: none;
+}
+
+.drop-zone,
+.equipment {
+  pointer-events: auto;
+}
+
+/* Зоны и оборудование */
+
+.drop-zone {
+  background-color: rgba(15, 23, 42, 0.9);
+  border-radius: 0.6rem;
+  border: 1px dashed #4b5563;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  color: #e5e7eb;
+  font-size: 0.9rem;
+  text-align: center;
+  padding: 0.5rem;
+}
+
+.drop-zone img {
+  width: 40px;
+  height: 40px;
+  object-fit: contain;
+  margin-bottom: 0.3rem;
+}
+
+.tube-zone {
+  grid-column: 1 / 2;
+  grid-row: 1 / 2;
+}
+
+.slide-zone {
+  grid-column: 2 / 3;
+  grid-row: 1 / 2;
+}
+
+.stain-zone {
+  grid-column: 3 / 4;
+  grid-row: 1 / 2;
+}
+
+.equipment {
+  background-color: rgba(15, 23, 42, 0.95);
+  border-radius: 0.6rem;
+  border: 1px solid #4b5563;
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  color: #e5e7eb;
+  font-size: 0.9rem;
+  padding: 0.4rem;
+  cursor: pointer;
+}
+
+.equipment img {
+  width: 48px;
+  height: 48px;
+  object-fit: contain;
+  margin-bottom: 0.2rem;
+}
+
+.incubator {
+  grid-column: 1 / 2;
+  grid-row: 2 / 3;
+}
+
+.centrifuge {
+  grid-column: 2 / 3;
+  grid-row: 2 / 3;
+}
+
+.microscope {
+  grid-column: 3 / 4;
+  grid-row: 2 / 3;
+}
+
+/* Подсветка текущих целей */
+
+.highlight-target {
+  box-shadow: 0 0 0 2px #22c55e;
+}
+
+.drop-zone.highlighted,
+.equipment.highlighted {
+  box-shadow: 0 0 0 2px #22c55e;
+  border-color: #22c55e;
+}
+
+/* Журнал */
+
+.action-log {
+  position: relative;
+  z-index: 1;
+  margin-top: 10.5rem; /* чтобы выйти из-под absolute workbench */
+  background-color: rgba(15, 23, 42, 0.95);
+  border-radius: 0.6rem;
+  padding: 0.6rem 0.8rem;
+  border: 1px solid #1f2937;
+}
+
+.action-log h3 {
+  margin-top: 0;
+  font-size: 0.95rem;
+}
+
+#action-log-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  max-height: 180px;
+  overflow-y: auto;
+  font-size: 0.85rem;
+}
+
+#action-log-list li {
+  padding: 0.2rem 0;
+  border-bottom: 1px solid #111827;
+}
+
+/* Правая панель */
+
+.feedback {
+  margin-top: 1rem;
+  padding: 0.6rem;
+  border-radius: 0.6rem;
+  font-size: 0.9rem;
+  min-height: 48px;
+}
+
+.feedback.error {
+  background-color: rgba(239, 68, 68, 0.12);
+  border: 1px solid #ef4444;
+  color: #fecaca;
+}
+
+.feedback.success {
+  background-color: rgba(22, 163, 74, 0.12);
+  border: 1px solid #22c55e;
+  color: #bbf7d0;
+}
+
+/* Модальные окна */
+
+.modal {
+  position: fixed;
+  inset: 0;
+  background-color: rgba(15, 23, 42, 0.85);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 40;
+}
+
+.modal.hidden {
+  display: none;
+}
+
+.modal-content {
+  background-color: #020617;
+  border-radius: 0.8rem;
+  padding: 1rem 1.5rem;
+  border: 1px solid #1f2937;
+  max-width: 640px;
+  width: 90%;
+  position: relative;
+}
+
+.modal-close {
+  position: absolute;
+  top: 0.4rem;
+  right: 0.6rem;
+  background: none;
+  border: none;
+  color: #9ca3af;
+  font-size: 1.4rem;
+  cursor: pointer;
+}
+
+.modal-content img {
+  margin: 0.5rem auto;
+  max-height: 320px;
+}
+
+/* Кариотип */
+
+.karyotype-view {
+  background-color: #020617;
+  border-radius: 0.6rem;
+  padding: 0.5rem;
+  border: 1px solid #1f2937;
+  margin-bottom: 0.8rem;
+  text-align: center;
+}
+
+/* Формы */
+
+label {
+  display: block;
+  margin-bottom: 0.6rem;
+  font-size: 0.95rem;
+}
+
+input[type="text"],
+select {
+  width: 100%;
+  padding: 0.4rem 0.6rem;
+  border-radius: 0.4rem;
+  border: 1px solid #4b5563;
+  background-color: #020617;
+  color: #e5e7eb;
+}
+
+/* Подвал */
+
+.main-footer {
+  text-align: center;
+  padding: 1rem;
+  font-size: 0.8rem;
+  color: #6b7280;
+  border-top: 1px solid #111827;
+  margin-top: 1rem;
+}
+
+/* Адаптивность */
+
+@media (max-width: 960px) {
+  .lab-layout {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .lab-area {
+    min-height: 420px;
+  }
+
+  .workbench {
+    position: static;
+    margin-top: 0.8rem;
+  }
+
+  .lab-background img {
+    display: none;
   }
 }
 
-function saveStats(stats) {
-  localStorage.setItem(STATS_KEY, JSON.stringify(stats));
-}
-
-function incrementRun(isDiagnosisCorrect) {
-  const stats = getStats();
-  stats.totalRuns += 1;
-  if (isDiagnosisCorrect) {
-    stats.correctDx += 1;
-  }
-  saveStats(stats);
-}
-
-// ===== Данные по случаям (кариотипы) =====
-
-const CASES = [
-  { id: 'normal', type: 'normal', label: 'Нормальный кариотип' },
-  { id: 'trisomy21', type: 'trisomy', label: 'Трисомия 21 (Дауна)' },
-  { id: 'trisomy18', type: 'trisomy', label: 'Трисомия 18 (Эдвардса)' },
-  { id: 'trisomy13', type: 'trisomy', label: 'Трисомия 13 (Патау)' },
-];
-
-function generateCase() {
-  const randomIndex = Math.floor(Math.random() * CASES.length);
-  const base = CASES[randomIndex];
-  const isMale = Math.random() < 0.5;
-
-  let formula, diagnosisName;
-
-  switch (base.id) {
-    case 'normal':
-      formula = isMale ? '46,XY' : '46,XX';
-      diagnosisName = 'Нормальный кариотип';
-      break;
-    case 'trisomy21':
-      formula = isMale ? '47,XY,+21' : '47,XX,+21';
-      diagnosisName = 'Трисомия 21 (синдром Дауна)';
-      break;
-    case 'trisomy18':
-      formula = isMale ? '47,XY,+18' : '47,XX,+18';
-      diagnosisName = 'Трисомия 18 (синдром Эдвардса)';
-      break;
-    case 'trisomy13':
-      formula = isMale ? '47,XY,+13' : '47,XX,+13';
-      diagnosisName = 'Трисомия 13 (синдром Патау)';
-      break;
-    default:
-      formula = '46,XX';
-      diagnosisName = 'Нормальный кариотип';
-  }
-
-  return {
-    id: base.id,
-    formula,
-    diagnosisName,
-    sex: isMale ? 'XY' : 'XX',
-  };
-}
-
-// ===== Этапы симуляции =====
-
-const STEPS = [
-  {
-    id: 1,
-    name: 'Получение клеточного материала',
-    description:
-      'Перенесите клеточный материал в пробирку для образца и промаркируйте её.',
-    requiredActions: ['add_sample_to_sample_tube'],
-    hint: 'Перетащите «Клеточный материал» на «Пробирку для образца».',
-    errorExplanation:
-      'Сначала нужно получить клеточный материал и поместить его в пробирку для образца.',
-  },
-  {
-    id: 2,
-    name: 'Культивирование клеток',
-    description:
-      'Добавьте питательную среду и митоген в пробирку с образцом, затем инкубируйте.',
-    requiredActions: [
-      'add_culture_medium_to_sample_tube',
-      'add_mitogen_to_sample_tube',
-      'use_incubator',
-    ],
-    hint: 'Добавьте в пробирку с образцом среду и митоген, затем нажмите на инкубатор.',
-    errorExplanation:
-      'Последовательность: среда → митоген → инкубатор. Без культивирования получить метафазу нельзя.',
-  },
-  {
-    id: 3,
-    name: 'Добавление колхицина',
-    description:
-      'Введите колхицин в культуру для остановки митоза в метафазе, затем снова инкубируйте.',
-    requiredActions: ['add_colchicine_to_culture_tube', 'use_incubator'],
-    hint: 'Перетащите «Колхицин» на пробирку с культурой и нажмите на инкубатор.',
-    errorExplanation:
-      'Колхицин добавляют к уже культивированным клеткам перед гипотонической обработкой.',
-  },
-  {
-    id: 4,
-    name: 'Гипотоническая обработка клеток',
-    description:
-      'Обработайте клетки гипотоническим раствором и центрифугируйте для осаждения клеток.',
-    requiredActions: [
-      'add_hypotonic_to_culture_tube',
-      'use_incubation_for_hypotonic',
-      'use_centrifuge',
-    ],
-    hint: 'Добавьте гипотонический раствор, «выдержите» его (нажмите ещё раз на культуру), затем используйте центрифугу.',
-    errorExplanation:
-      'Гипотоническая обработка проводится до фиксации, затем клетки осаждаются центрифугированием.',
-  },
-  {
-    id: 5,
-    name: 'Фиксация (метанол + уксусная кислота)',
-    description:
-      'Добавьте фиксатор в осаждённые клетки и перемешайте, чтобы зафиксировать хромосомы.',
-    requiredActions: ['add_fixative_to_culture_tube', 'mix_fixative'],
-    hint: 'Перетащите фиксатор на пробирку с клеточной массой и «перемешайте» (щёлкните по пробирке).',
-    errorExplanation:
-      'Фиксатор (метанол + уксус) добавляют после гипотонии и центрифугирования.',
-  },
-  {
-    id: 6,
-    name: 'Нанесение клеток на предметное стекло',
-    description:
-      'Нанесите фиксированную суспензию на предметное стекло и дайте высохнуть.',
-    requiredActions: ['add_cells_to_slide_area', 'dry_slide'],
-    hint: 'Перетащите «Предметное стекло» в зону стекла, затем капните клетки (щёлкните по пробирке).',
-    errorExplanation:
-      'Клеточная суспензия наносится на стекло после фиксации, затем высушивается.',
-  },
-  {
-    id: 7,
-    name: 'Окрашивание методом G-banding (Giemsa)',
-    description:
-      'Окрасьте препарат красителем Giemsa, промойте и высушите.',
-    requiredActions: ['add_giemsa_to_stain_area', 'wash_slide', 'dry_slide_after_stain'],
-    hint: 'Перетащите «Окраска Giemsa» на зону окраски, затем используйте буфер и дайте высохнуть.',
-    errorExplanation:
-      'G-banding требует окраски препарату Giemsa, последующей промывки и высушивания.',
-  },
-  {
-    id: 8,
-    name: 'Получение метафазной пластинки под микроскопом',
-    description: 'Поместите препарат под микроскоп, сфокусируйтесь и получите изображение метафазы.',
-    requiredActions: ['use_microscope'],
-    hint: 'Нажмите на микроскоп, чтобы посмотреть препарат.',
-    errorExplanation:
-      'Без помещения препарата под микроскоп вы не увидите метафазные пластинки.',
-  },
-  {
-    id: 9,
-    name: 'Сбор хромосом в кариотип',
-    description:
-      'Соберите пары хромосом в условном поле кариотипа (упрощённый пазл).',
-    requiredActions: ['open_karyotype_puzzle'],
-    hint: 'В модальном окне перетащите условные хромосомы в ячейки кариотипа.',
-    errorExplanation:
-      'Кариотип формируют путём раскладки хромосом по парам в стандартном порядке.',
-  },
-  {
-    id: 10,
-    name: 'Постановка диагноза',
-    description:
-      'На основе кариотипа определите цитогенетическую формулу и выберите диагноз.',
-    requiredActions: ['submit_diagnosis'],
-    hint: 'Введите формулу (например, 47,XY,+21) и выберите диагноз из списка.',
-    errorExplanation:
-      'Диагноз формулируется на основе полученного кариотипа и выявленных числовых аномалий.',
-  },
-];
-
-const TOTAL_STEPS = STEPS.length;
-
-// ===== Глобальное состояние симуляции =====
-
-const state = {
-  currentCase: null,
-  currentStepIndex: 0,
-  performedActions: [],
-  karyotypeBuilt: false,
-};
-
-// ===== Инициализация =====
-
-document.addEventListener('DOMContentLoaded', () => {
-  initSimulation();
-});
-
-function initSimulation() {
-  state.currentCase = generateCase();
-  state.currentStepIndex = 0;
-  state.performedActions = [];
-  state.karyotypeBuilt = false;
-
-  setupStepUI();
-  setupDragAndDrop();
-  setupEquipmentHandlers();
-  setupButtons();
-  setupKaryotypeBuilder();
-  logAction('Симуляция запущена. Случай: ' + state.currentCase.formula);
-}
-
-// ===== UI обновления =====
-
-function setupStepUI() {
-  const step = STEPS[state.currentStepIndex];
-  const stepNumberEl = document.getElementById('step-number');
-  const stepTotalEl = document.getElementById('step-total');
-  const stepNameEl = document.getElementById('current-step-name');
-  const stepDescEl = document.getElementById('current-step-description');
-  const hintPanel = document.getElementById('hint-panel');
-  const progressFill = document.getElementById('progress-bar-fill');
-
-  if (stepNumberEl) stepNumberEl.textContent = step.id;
-  if (stepTotalEl) stepTotalEl.textContent = TOTAL_STEPS;
-  if (stepNameEl) stepNameEl.textContent = step.name;
-  if (stepDescEl) stepDescEl.textContent = step.description;
-  if (hintPanel) hintPanel.textContent = '';
-
-  if (progressFill) {
-    const percent = (step.id / TOTAL_STEPS) * 100;
-    progressFill.style.width = `${percent}%`;
-  }
-}
-
-function logAction(text) {
-  const list = document.getElementById('action-log-list');
-  if (!list) return;
-  const li = document.createElement('li');
-  const timestamp = new Date().toLocaleTimeString();
-  li.textContent = `[${timestamp}] ${text}`;
-  list.appendChild(li);
-  list.scrollTop = list.scrollHeight;
-}
-
-// ===== Drag and Drop реагентов =====
-
-function setupDragAndDrop() {
-  const reagents = document.querySelectorAll('.reagent');
-  const dropZones = document.querySelectorAll('.drop-zone');
-
-  let draggedReagent = null;
-
-  reagents.forEach(reagent => {
-    reagent.addEventListener('dragstart', e => {
-      draggedReagent = reagent;
-      reagent.classList.add('dragging');
-      e.dataTransfer.effectAllowed = 'move';
-    });
-
-    reagent.addEventListener('dragend', () => {
-      draggedReagent = null;
-      reagent.classList.remove('dragging');
-    });
-  });
-
-  dropZones.forEach(zone => {
-    zone.addEventListener('dragover', e => {
-      e.preventDefault();
-      if (!draggedReagent) return;
-      zone.classList.add('highlight');
-    });
-
-    zone.addEventListener('dragleave', () => {
-      zone.classList.remove('highlight');
-    });
-
-    zone.addEventListener('drop', e => {
-      e.preventDefault();
-      zone.classList.remove('highlight');
-      if (!draggedReagent) return;
-
-      const reagentId = draggedReagent.dataset.reagentId;
-      const targetId = zone.dataset.dropTarget;
-      handleReagentDrop(reagentId, targetId);
-    });
-  });
-}
-
-function handleReagentDrop(reagentId, targetId) {
-  const actionId = mapReagentToAction(reagentId, targetId);
-
-  if (!actionId) {
-    showError(
-      'Неверное использование реагента.',
-      'Данный реагент не применяется на этом этапе на указанной зоне.'
-    );
-    return;
-  }
-
-  handleAction(actionId, `Реагент «${reagentId}» на зону «${targetId}»`);
-}
-
-function mapReagentToAction(reagentId, targetId) {
-  // Карта соответствий reagent + target → actionId
-  switch (reagentId) {
-    case 'sample_material':
-      if (targetId === 'sample_tube') return 'add_sample_to_sample_tube';
-      break;
-    case 'culture_medium':
-      if (targetId === 'sample_tube') return 'add_culture_medium_to_sample_tube';
-      break;
-    case 'mitogen':
-      if (targetId === 'sample_tube') return 'add_mitogen_to_sample_tube';
-      break;
-    case 'colchicine':
-      if (targetId === 'culture_tube') return 'add_colchicine_to_culture_tube';
-      break;
-    case 'hypotonic':
-      if (targetId === 'culture_tube') return 'add_hypotonic_to_culture_tube';
-      break;
-    case 'fixative':
-      if (targetId === 'culture_tube') return 'add_fixative_to_culture_tube';
-      break;
-    case 'giemsa':
-      if (targetId === 'stain_area') return 'add_giemsa_to_stain_area';
-      break;
-    case 'wash_buffer':
-      if (targetId === 'stain_area') return 'wash_slide';
-      break;
-    case 'slide':
-      if (targetId === 'slide_area') return 'add_slide_to_slide_area';
-      break;
-  }
-  // Дополнительные действия с уже имеющимся стеклом/суспензией
-  if (targetId === 'slide_area' && reagentId === 'sample_material') {
-    return 'add_cells_to_slide_area';
-  }
-
-  return null;
-}
-
-// ===== Оборудование и дополнительные клики =====
-
-function setupEquipmentHandlers() {
-  const equipments = document.querySelectorAll('.equipment');
-  equipments.forEach(eq => {
-    eq.addEventListener('click', () => {
-      const actionId = eq.dataset.actionId;
-      if (!actionId) return;
-
-      handleAction(actionId, `Использование прибора: ${actionId}`);
-    });
-  });
-
-  // Дополнительные клики по пробиркам / зонам для некоторых действий
-  const cultureTube = document.getElementById('tube-culture');
-  const slideArea = document.getElementById('slide-area');
-  const stainArea = document.getElementById('stain-area');
-
-  if (cultureTube) {
-    cultureTube.addEventListener('click', () => {
-      const step = STEPS[state.currentStepIndex];
-      if (!step) return;
-
-      if (step.id === 4) {
-        handleAction(
-          'use_incubation_for_hypotonic',
-          'Выдержка клеток в гипотоническом растворе'
-        );
-      } else if (step.id === 5) {
-        handleAction('mix_fixative', 'Перемешивание суспензии с фиксатором');
-      } else if (step.id === 6) {
-        handleAction('add_cells_to_slide_area', 'Нанесение клеток на стекло');
-      }
-    });
-  }
-
-  if (slideArea) {
-    slideArea.addEventListener('click', () => {
-      const step = STEPS[state.currentStepIndex];
-      if (!step) return;
-
-      if (step.id === 6) {
-        handleAction('dry_slide', 'Высушивание препарата на стекле');
-      }
-    });
-  }
-
-  if (stainArea) {
-    stainArea.addEventListener('click', () => {
-      const step = STEPS[state.currentStepIndex];
-      if (!step) return;
-
-      if (step.id === 7) {
-        handleAction('dry_slide_after_stain', 'Высушивание препарата после окраски');
-      }
-    });
-  }
-}
-
-// ===== Кнопки управления =====
-
-function setupButtons() {
-  const hintBtn = document.getElementById('hint-button');
-  const repeatBtn = document.getElementById('repeat-step-button');
-  const restartBtn = document.getElementById('restart-simulation');
-  const errorCloseBtn = document.getElementById('error-close-button');
-
-  if (hintBtn) {
-    hintBtn.addEventListener('click', () => {
-      const step = STEPS[state.currentStepIndex];
-      if (!step) return;
-      const hintPanel = document.getElementById('hint-panel');
-      if (hintPanel) {
-        hintPanel.textContent = step.hint;
-      }
-    });
-  }
-
-  if (repeatBtn) {
-    repeatBtn.addEventListener('click', () => {
-      state.performedActions = [];
-      logAction('Этап перезапущен пользователем.');
-    });
-  }
-
-  if (restartBtn) {
-    restartBtn.addEventListener('click', () => {
-      logAction('Пользователь запросил полный перезапуск симуляции.');
-      initSimulation();
-    });
-  }
-
-  if (errorCloseBtn) {
-    errorCloseBtn.addEventListener('click', () => {
-      hideModal('error-modal');
-    });
-  }
-
-  // Закрытие модалок по клику на крестик
-  document.querySelectorAll('[data-close-modal]').forEach(el => {
-    el.addEventListener('click', () => {
-      const modal = el.closest('.modal');
-      if (modal) modal.classList.add('hidden');
-    });
-  });
-
-  // Модалка микроскопа → кариотип
-  const proceedBtn = document.getElementById('proceed-to-karyotype');
-  if (proceedBtn) {
-    proceedBtn.addEventListener('click', () => {
-      hideModal('microscope-modal');
-      showModal('karyotype-modal');
-      handleAction('open_karyotype_puzzle', 'Открыто поле для сборки кариотипа');
-    });
-  }
-
-  // Форма диагноза
-  const diagnosisForm = document.getElementById('diagnosis-form');
-  if (diagnosisForm) {
-    diagnosisForm.addEventListener('submit', e => {
-      e.preventDefault();
-      const formData = new FormData(diagnosisForm);
-      const userFormula = formData.get('formula');
-      const userDxId = formData.get('diagnosis');
-      checkDiagnosis(userFormula, userDxId);
-    });
-  }
-}
-
-// ===== Логика шагов =====
-
-function handleAction(actionId, logText) {
-  const step = STEPS[state.currentStepIndex];
-  if (!step) return;
-
-  const expectedActions = step.requiredActions;
-  const nextExpectedAction = expectedActions[state.performedActions.length];
-
-  if (actionId !== nextExpectedAction) {
-    showError(
-      'Действие не соответствует правильной последовательности для текущего этапа.',
-      step.errorExplanation + ` Ожидалось: ${nextExpectedAction}, получено: ${actionId}.`
-    );
-    return;
-  }
-
-  state.performedActions.push(actionId);
-  if (logText) {
-    logAction(logText);
-  } else {
-    logAction(`Действие: ${actionId}`);
-  }
-
-  if (state.performedActions.length === expectedActions.length) {
-    goToNextStep();
-  }
-}
-
-function goToNextStep() {
-  if (state.currentStepIndex < STEPS.length - 1) {
-    state.currentStepIndex++;
-    state.performedActions = [];
-    setupStepUI();
-
-    const step = STEPS[state.currentStepIndex];
-    logAction(`Переход к этапу: ${step.name}`);
-
-    // Особое поведение для микроскопа — показать метафазу
-    if (step.id === 8) {
-      const formulaDisplay = document.getElementById('case-formula-display');
-      if (formulaDisplay) {
-        formulaDisplay.textContent = state.currentCase.formula;
-      }
-    }
-  } else {
-    // Финальный шаг технически обрабатывается через форму диагноза
-    logAction('Все этапы протокола выполнены.');
-  }
-}
-
-// ===== Модальные окна и ошибки =====
-
-function showModal(id) {
-  const modal = document.getElementById(id);
-  if (modal) modal.classList.remove('hidden');
-}
-
-function hideModal(id) {
-  const modal = document.getElementById(id);
-  if (modal) modal.classList.add('hidden');
-}
-
-function showError(message, explanation) {
-  const msgEl = document.getElementById('error-message');
-  const explEl = document.getElementById('error-explanation');
-  if (msgEl) msgEl.textContent = message;
-  if (explEl) explEl.textContent = explanation || '';
-  showModal('error-modal');
-  logAction('Ошибка: ' + message);
-}
-
-// ===== Кариотип (упрощённый пазл) =====
-
-function setupKaryotypeBuilder() {
-  const pool = document.getElementById('chromosome-pool');
-  const grid = document.getElementById('karyotype-grid');
-  if (!pool || !grid) return;
-
-  pool.innerHTML = '';
-  grid.innerHTML = '';
-
-  // Условно генерируем 23 "пары" → 46 "хромосом" (метки 1–23, X/Y)
-  const chromosomes = [];
-  for (let i = 1; i <= 22; i++) {
-    chromosomes.push({ id: `c${i}a`, label: i });
-    chromosomes.push({ id: `c${i}b`, label: i });
-  }
-  chromosomes.push({ id: 'cXa', label: 'X' });
-  chromosomes.push({ id: 'cXb', label: 'X/Y' });
-
-  chromosomes.forEach(ch => {
-    const div = document.createElement('div');
-    div.className = 'chromosome';
-    div.textContent = ch.label;
-    div.draggable = true;
-    div.dataset.chromosomeId = ch.id;
-    div.addEventListener('dragstart', e => {
-      e.dataTransfer.effectAllowed = 'move';
-      e.dataTransfer.setData('text/plain', ch.id);
-    });
-    pool.appendChild(div);
-  });
-
-  // Слоты для 23 пар (6 колонок)
-  for (let i = 1; i <= 23; i++) {
-    const slot = document.createElement('div');
-    slot.className = 'karyotype-slot';
-    slot.dataset.slotIndex = String(i);
-    slot.textContent = `Пара ${i}`;
-    setupKaryotypeSlot(slot);
-    grid.appendChild(slot);
-  }
-}
-
-function setupKaryotypeSlot(slot) {
-  slot.addEventListener('dragover', e => {
-    e.preventDefault();
-    slot.classList.add('highlight');
-  });
-
-  slot.addEventListener('dragleave', () => {
-    slot.classList.remove('highlight');
-  });
-
-  slot.addEventListener('drop', e => {
-    e.preventDefault();
-    slot.classList.remove('highlight');
-    const chId = e.dataTransfer.getData('text/plain');
-    if (!chId) return;
-
-    const pool = document.getElementById('chromosome-pool');
-    const chEl = pool.querySelector(`[data-chromosome-id="${chId}"]`);
-    if (!chEl) return;
-
-    chEl.draggable = false;
-    chEl.style.cursor = 'default';
-    slot.appendChild(chEl);
-
-    // Простая эвристика: если достаточно ячеек заполнено, считаем, что кариотип "собран"
-    const filledSlots = document.querySelectorAll('.karyotype-slot .chromosome').length;
-    if (filledSlots >= 10 && !state.karyotypeBuilt) {
-      state.karyotypeBuilt = true;
-      logAction('Кариотип условно собран (упрощённый пазл).');
-    }
-  });
-}
-
-// ===== Проверка диагноза =====
-
-function checkDiagnosis(userFormulaRaw, userDiagnosisId) {
-  const feedbackEl = document.getElementById('diagnosis-feedback');
-  if (!feedbackEl) return;
-
-  const userFormula = (userFormulaRaw || '').trim();
-  if (!userFormula || !userDiagnosisId) {
-    feedbackEl.textContent = 'Пожалуйста, заполните формулу и выберите диагноз.';
-    feedbackEl.className = 'diagnosis-feedback error';
-    return;
-  }
-
-  const correctFormula = state.currentCase.formula;
-  const correctId = state.currentCase.id;
-
-  const formulaCorrect = userFormula === correctFormula;
-  const diagnosisCorrect = userDiagnosisId === correctId;
-
-  const isAllCorrect = formulaCorrect && diagnosisCorrect;
-
-  incrementRun(isAllCorrect);
-  handleAction('submit_diagnosis', 'Пользователь отправил диагноз.');
-
-  if (isAllCorrect) {
-    feedbackEl.textContent =
-      'Верно! Формула: ' + correctFormula + '. Диагноз: ' + state.currentCase.diagnosisName + '.';
-    feedbackEl.className = 'diagnosis-feedback success';
-    logAction('Диагноз поставлен верно.');
-
-    // Можно автоматически закрыить модалку или предложить перезапуск
-  } else {
-    feedbackEl.innerHTML =
-      'Есть ошибки в формуле или диагнозе.<br>' +
-      'Правильная формула: <strong>' +
-      correctFormula +
-      '</strong>, диагноз: <strong>' +
-      state.currentCase.diagnosisName +
-      '</strong>.';
-    feedbackEl.className = 'diagnosis-feedback error';
-    logAction('Диагноз неверен.');
+@media (max-width: 720px) {
+  .lab-toolbar {
+    flex-direction: column;
+    align-items: flex-start;
   }
 }
