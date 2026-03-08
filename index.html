@@ -2,83 +2,73 @@
 <html lang="ru">
 <head>
   <meta charset="UTF-8" />
-  <title>Виртуальная лаборатория по кариотипированию</title>
+  <title>Виртуальная лаборатория кариотипирования</title>
   <link rel="stylesheet" href="styles.css" />
-  <script defer src="main.js"></script>
 </head>
 <body>
-  <header class="header">
-    <div class="logo">Виртуальная лаборатория по кариотипированию</div>
-    <nav class="nav">
-      <a href="index.html" class="nav-link active">Главная</a>
-      <a href="theory.html" class="nav-link">Теория</a>
-      <a href="simulation.html" class="nav-link">Симуляция</a>
+  <header class="main-header">
+    <div class="logo-title">
+      <h1>Виртуальная лаборатория по кариотипированию</h1>
+      <p>Интерактивная цитогенетическая лаборатория для студентов-медиков</p>
+    </div>
+    <nav class="main-nav">
+      <a href="index.html" class="active">Главная</a>
+      <a href="theory.html">Теория</a>
+      <a href="simulation.html">Симуляция</a>
     </nav>
   </header>
 
-  <main class="page page-home">
+  <main class="home-main">
     <section class="hero">
       <div class="hero-text">
-        <h1>Цитогенетический анализ в виртуальной лаборатории</h1>
+        <h2>Освойте кариотипирование в виртуальной лаборатории</h2>
         <p>
-          Отработайте полный цикл кариотипирования: от получения клеточного материала
-          до постановки диагноза по результатам анализа кариотипа.
+          Проходите все этапы цитогенетического анализа: от получения клеточного материала
+          до постановки диагноза по кариотипу. Перетаскивайте реактивы, запускайте инкубатор,
+          работайте с микроскопом и анализируйте хромосомы.
         </p>
-        <div class="hero-actions">
-          <a class="btn primary" href="simulation.html">Начать симуляцию</a>
-          <a class="btn secondary" href="theory.html">Сначала изучить теорию</a>
+        <div class="hero-buttons">
+          <a href="simulation.html" class="btn btn-primary">Начать симуляцию</a>
+          <a href="theory.html" class="btn btn-secondary">Изучить теорию</a>
         </div>
       </div>
-      <div class="hero-illustration">
-        <div class="hero-lab">
-          <div class="hero-microscope"></div>
-          <div class="hero-tubes"></div>
+      <div class="hero-visual">
+        <div class="hero-lab-preview">
+          <img src="assets/lab_bg.jpg" alt="Лабораторный стол" />
+          <div class="hero-lab-overlay">
+            <img src="assets/microscope.png" alt="Микроскоп" class="hero-microscope" />
+            <img src="assets/incubator.png" alt="Инкубатор" class="hero-incubator" />
+            <img src="assets/tube_sample.png" alt="Пробирка" class="hero-tube" />
+          </div>
         </div>
-      </div>
-    </section>
-
-    <section class="section">
-      <h2>Что вы сможете отработать</h2>
-      <div class="features">
-        <article class="card">
-          <h3>Лабораторные этапы</h3>
-          <p>Пошаговая симуляция от культивирования клеток до окраски метафазных пластинок.</p>
-        </article>
-        <article class="card">
-          <h3>Интерактивные действия</h3>
-          <p>Перетаскивайте реактивы, запускайте оборудование и следуйте протоколу.</p>
-        </article>
-        <article class="card">
-          <h3>Диагностика по кариотипу</h3>
-          <p>Определяйте нормальный кариотип и трисомии 13, 18, 21 хромосом.</p>
-        </article>
       </div>
     </section>
 
-    <section class="section section-stats">
-      <h2>Ваш прогресс</h2>
-      <div class="stats-grid">
-        <div class="stat-card">
-          <div class="stat-label">Пройдено симуляций</div>
-          <div class="stat-value" id="stat-total-runs">0</div>
+    <section class="home-features">
+      <h2>Что умеет виртуальная лаборатория</h2>
+      <div class="features-grid">
+        <div class="feature-card">
+          <h3>Пошаговая симуляция</h3>
+          <p>10 этапов: культивирование, колхицин, гипотония, фиксация, окраска, микроскопия и др.</p>
         </div>
-        <div class="stat-card">
-          <div class="stat-label">Корректных диагнозов</div>
-          <div class="stat-value" id="stat-correct-dx">0</div>
+        <div class="feature-card">
+          <h3>Интерактивные реактивы</h3>
+          <p>Перетаскивайте колхицин, гипотонический раствор, фиксатор и краситель на пробирку.</p>
         </div>
-        <div class="stat-card">
-          <div class="stat-label">Средняя точность диагноза</div>
-          <div class="stat-value" id="stat-accuracy">0%</div>
+        <div class="feature-card">
+          <h3>Визуализация микроскопа</h3>
+          <p>Наблюдайте метафазную пластинку и итоговый кариотип для каждого клинического случая.</p>
+        </div>
+        <div class="feature-card">
+          <h3>Случайные кариотипы</h3>
+          <p>Норма, трисомия 21, 18 или 13 — новый случай при каждом запуске симуляции.</p>
         </div>
       </div>
-      <p class="small">
-        Статистика хранится локально в вашем браузере и не отправляется на сервер.
-      </p>
     </section>
   </main>
 
-  <footer class="footer">
-    <span>© Медицинский университет — виртуальная лаборатория по кариотипированию</span>
+  <footer class="main-footer">
+    <p>© Виртуальная лаборатория по кариотипированию</p>
   </footer>
 </body>
 </html>
