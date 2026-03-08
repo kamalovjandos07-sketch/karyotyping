@@ -2,132 +2,75 @@
 <html lang="ru">
 <head>
   <meta charset="UTF-8" />
-  <title>Теория — виртуальная лаборатория по кариотипированию</title>
+  <title>Теория — Виртуальная лаборатория кариотипирования</title>
   <link rel="stylesheet" href="styles.css" />
-  <script defer src="main.js"></script>
 </head>
 <body>
-  <header class="header">
-    <div class="logo">Виртуальная лаборатория по кариотипированию</div>
-    <nav class="nav">
-      <a href="index.html" class="nav-link">Главная</a>
-      <a href="theory.html" class="nav-link active">Теория</a>
-      <a href="simulation.html" class="nav-link">Симуляция</a>
+  <header class="main-header">
+    <div class="logo-title">
+      <h1>Виртуальная лаборатория по кариотипированию</h1>
+      <p>Теоретические материалы</p>
+    </div>
+    <nav class="main-nav">
+      <a href="index.html">Главная</a>
+      <a href="theory.html" class="active">Теория</a>
+      <a href="simulation.html">Симуляция</a>
     </nav>
   </header>
 
-  <main class="page page-theory">
-    <section class="section">
-      <h1>Теоретические основы кариотипирования</h1>
+  <main class="theory-main">
+    <section class="theory-section">
+      <h2>Основы цитогенетики</h2>
       <p>
-        Раздел предназначен для краткого повторения ключевых понятий цитогенетики,
-        необходимых для успешного прохождения симуляции.
+        Кариотип — это совокупность хромосом клетки с их числом, размерами и морфологией.
+        В норме у человека 46 хромосом: 22 пары аутосом и 1 пара половых хромосом (XX или XY).
       </p>
-
-      <div class="tabs">
-        <button class="tab-button active" data-tab="basics">Основы цитогенетики</button>
-        <button class="tab-button" data-tab="methods">Методы кариотипирования</button>
-        <button class="tab-button" data-tab="protocol">Этапы лабораторной работы</button>
-        <button class="tab-button" data-tab="syndromes">Клинические синдромы</button>
-      </div>
-
-      <div class="tab-content active" id="tab-basics">
-        <h2>Основы цитогенетики</h2>
-        <p>
-          Кариотип — диплоидный набор хромосом соматической клетки организма, упорядоченный
-          по размерам и морфологии. У человека нормальный кариотип содержит 46 хромосом:
-          22 пары аутосом и 1 пару половых хромосом (XX или XY).
-        </p>
-        <p>
-          Митоз — тип деления соматических клеток, при котором образуются две дочерние клетки
-          с идентичным набором хромосом. Для кариотипирования используют клетки, остановленные
-          в метафазе митоза, когда хромосомы максимально компактны и хорошо видны.
-        </p>
-      </div>
-
-      <div class="tab-content" id="tab-methods">
-        <h2>Методы кариотипирования</h2>
-        <p>
-          Стандартный метод цитогенетического анализа включает культивирование клеток,
-          остановку митоза колхицином, гипотоническую обработку, фиксацию, нанесение на стекло,
-          окраску (часто методом G-banding) и микроскопическое исследование.
-        </p>
-        <p>
-          Метод G-banding (Giemsa banding) основан на дифференциальном окрашивании хромосом,
-          что позволяет визуализировать характерный полосатый рисунок и выявлять числовые и
-          структурные аномалии.
-        </p>
-      </div>
-
-      <div class="tab-content" id="tab-protocol">
-        <h2>Этапы лабораторной работы</h2>
-        <ol>
-          <li>Получение клеточного материала.</li>
-          <li>Культивирование клеток в подходящей среде.</li>
-          <li>Добавление колхицина для остановки митоза в метафазе.</li>
-          <li>Гипотоническая обработка клеток.</li>
-          <li>Фиксация клеток (метанол + уксусная кислота).</li>
-          <li>Нанесение клеток на предметное стекло.</li>
-          <li>Окрашивание методом G-banding (Giemsa).</li>
-          <li>Получение метафазной пластинки под микроскопом.</li>
-          <li>Сбор хромосом в кариотип.</li>
-          <li>Постановка диагноза.</li>
-        </ol>
-      </div>
-
-      <div class="tab-content" id="tab-syndromes">
-        <h2>Клинические синдромы и варианты кариотипа</h2>
-        <div class="cards-grid">
-          <article class="card">
-            <h3>Нормальный кариотип</h3>
-            <p><strong>Формула:</strong> 46,XX или 46,XY</p>
-            <p>Отсутствие числовых аномалий аутосом и половых хромосом.</p>
-          </article>
-          <article class="card">
-            <h3>Синдром Дауна</h3>
-            <p><strong>Формула:</strong> 47,XX,+21 или 47,XY,+21</p>
-            <p>Трисомия 21 хромосомы. Характерные черты лица, умственная отсталость, врождённые пороки сердца.</p>
-          </article>
-          <article class="card">
-            <h3>Синдром Эдвардса</h3>
-            <p><strong>Формула:</strong> 47,XX,+18 или 47,XY,+18</p>
-            <p>Трисомия 18 хромосомы. Тяжёлые пороки развития, высокая ранняя летальность.</p>
-          </article>
-          <article class="card">
-            <h3>Синдром Патау</h3>
-            <p><strong>Формула:</strong> 47,XX,+13 или 47,XY,+13</p>
-            <p>Трисомия 13 хромосомы. Тяжёлые пороки ЦНС и других систем, высокая летальность.</p>
-          </article>
-        </div>
-      </div>
     </section>
 
-    <section class="section">
-      <a class="btn primary" href="simulation.html">Перейти к симуляции</a>
+    <section class="theory-section">
+      <h2>Этапы цитогенетического анализа</h2>
+      <ol>
+        <li>Получение клеточного материала.</li>
+        <li>Культивирование клеток.</li>
+        <li>Добавление колхицина для остановки митоза в метафазе.</li>
+        <li>Гипотоническая обработка клеток.</li>
+        <li>Фиксация (метанол + уксусная кислота).</li>
+        <li>Нанесение клеток на предметное стекло.</li>
+        <li>Окрашивание методом G-banding (Giemsa).</li>
+        <li>Получение метафазной пластинки под микроскопом.</li>
+        <li>Сбор хромосом в кариотип.</li>
+        <li>Постановка диагноза.</li>
+      </ol>
+    </section>
+
+    <section class="theory-section">
+      <h2>Клинические синдромы</h2>
+      <div class="theory-grid">
+        <article class="theory-card">
+          <h3>Нормальный кариотип</h3>
+          <p>46,XX или 46,XY. Без дополнительных или утраченных хромосом.</p>
+        </article>
+        <article class="theory-card">
+          <h3>Трисомия 21 (синдром Дауна)</h3>
+          <p>47,XX,+21 или 47,XY,+21. Дополнительная 21-я хромосома.</p>
+        </article>
+        <article class="theory-card">
+          <h3>Трисомия 18 (синдром Эдвардса)</h3>
+          <p>47,XX,+18 или 47,XY,+18. Дополнительная 18-я хромосома.</p>
+        </article>
+        <article class="theory-card">
+          <h3>Трисомия 13 (синдром Патау)</h3>
+          <p>47,XX,+13 или 47,XY,+13. Дополнительная 13-я хромосома.</p>
+        </article>
+      </div>
     </section>
   </main>
 
-  <footer class="footer">
-    <span>© Медицинский университет — виртуальная лаборатория по кариотипированию</span>
+  <footer class="main-footer">
+    <p>© Виртуальная лаборатория по кариотипированию</p>
   </footer>
-
-  <script>
-    // Простая логика вкладок на теоретической странице
-    document.addEventListener('DOMContentLoaded', () => {
-      const buttons = document.querySelectorAll('.tab-button');
-      const contents = document.querySelectorAll('.tab-content');
-
-      buttons.forEach(btn => {
-        btn.addEventListener('click', () => {
-          buttons.forEach(b => b.classList.remove('active'));
-          contents.forEach(c => c.classList.remove('active'));
-
-          btn.classList.add('active');
-          const tabId = 'tab-' + btn.dataset.tab;
-          document.getElementById(tabId).classList.add('active');
-        });
-      });
-    });
+</body>
+</html>
   </script>
 </body>
 </html>
