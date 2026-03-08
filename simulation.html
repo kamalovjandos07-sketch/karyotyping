@@ -2,78 +2,135 @@
 <html lang="ru">
 <head>
   <meta charset="UTF-8" />
-  <title>Симуляция — виртуальная лаборатория по кариотипированию</title>
+  <title>Симуляция — Виртуальная лаборатория кариотипирования</title>
   <link rel="stylesheet" href="styles.css" />
-  <script defer src="main.js"></script>
-  <script defer src="simulation.js"></script>
 </head>
 <body>
-  <header class="header">
-    <div class="logo">Виртуальная лаборатория по кариотипированию</div>
-    <nav class="nav">
-      <a href="index.html" class="nav-link">Главная</a>
-      <a href="theory.html" class="nav-link">Теория</a>
-      <a href="simulation.html" class="nav-link active">Симуляция</a>
+  <header class="main-header">
+    <div class="logo-title">
+      <h1>Виртуальная лаборатория по кариотипированию</h1>
+      <p>Интерактивная симуляция лабораторных этапов</p>
+    </div>
+    <nav class="main-nav">
+      <a href="index.html">Главная</a>
+      <a href="theory.html">Теория</a>
+      <a href="simulation.html" class="active">Симуляция</a>
     </nav>
   </header>
 
-  <main class="page page-simulation">
-    <section class="section">
-      <div class="simulation-header">
-        <h1>Симуляция цитогенетического анализа</h1>
-        <button class="btn secondary" id="restart-simulation">Перезапустить симуляцию</button>
+  <main class="lab-main">
+    <section class="lab-toolbar">
+      <div class="step-info">
+        <h2 id="current-step-title">Этап 1</h2>
+        <p id="current-step-description"></p>
       </div>
-
-      <div class="progress-container">
-        <div class="progress-label">Этап <span id="step-number">1</span> из <span id="step-total">10</span></div>
-        <div class="progress-bar">
-          <div class="progress-bar-fill" id="progress-bar-fill"></div>
-        </div>
+      <div class="case-info">
+        <p><strong>Текущий случай:</strong> <span id="case-formula">—</span></p>
+        <p><span id="case-diagnosis-name">—</span></p>
+      </div>
+      <div class="controls">
+        <button id="restart-simulation" class="btn btn-secondary">Перезапустить случай</button>
       </div>
     </section>
 
     <section class="lab-layout">
-      <!-- Левая колонка: инвентарь -->
+      <!-- Левая панель: реактивы -->
       <aside class="sidebar left">
-        <h2>Реактивы и расходники</h2>
-        <div class="inventory" id="inventory">
-          <div class="reagent" data-reagent-id="sample_material" draggable="true">Клеточный материал</div>
-          <div class="reagent" data-reagent-id="culture_medium" draggable="true">Питательная среда</div>
-          <div class="reagent" data-reagent-id="mitogen" draggable="true">Митоген</div>
-          <div class="reagent" data-reagent-id="colchicine" draggable="true">Колхицин</div>
-          <div class="reagent" data-reagent-id="hypotonic" draggable="true">Гипотонический раствор</div>
-          <div class="reagent" data-reagent-id="fixative" draggable="true">Фиксатор (метанол+уксус)</div>
-          <div class="reagent" data-reagent-id="giemsa" draggable="true">Окраска Giemsa</div>
-          <div class="reagent" data-reagent-id="wash_buffer" draggable="true">Буфер для промывки</div>
-          <div class="reagent" data-reagent-id="slide" draggable="true">Предметное стекло</div>
+        <h3>Реактивы</h3>
+        <div class="inventory">
+          <div class="reagent" draggable="true"
+               data-action-id="take_sample"
+               data-reagent-id="sample">
+            <img src="assets/tube_sample.png" alt="Клеточный материал" />
+            <span>Клеточный материал</span>
+          </div>
+
+          <div class="reagent" draggable="true"
+               data-action-id="add_medium"
+               data-reagent-id="medium">
+            <img src="assets/reagent_hypotonic.png" alt="Питательная среда" />
+            <span>Питательная среда</span>
+          </div>
+
+          <div class="reagent" draggable="true"
+               data-action-id="add_colchicine"
+               data-reagent-id="colchicine">
+            <img src="assets/reagent_colchicine.png" alt="Колхицин" />
+            <span>Колхицин</span>
+          </div>
+
+          <div class="reagent" draggable="true"
+               data-action-id="add_hypotonic"
+               data-reagent-id="hypotonic">
+            <img src="assets/reagent_hypotonic.png" alt="Гипотонический раствор" />
+            <span>Гипотонический раствор</span>
+          </div>
+
+          <div class="reagent" draggable="true"
+               data-action-id="add_fixative"
+               data-reagent-id="fixative">
+            <img src="assets/reagent_fixative.png" alt="Фиксатор" />
+            <span>Фиксатор</span>
+          </div>
+
+          <div class="reagent" draggable="true"
+               data-action-id="add_giemsa"
+               data-reagent-id="giemsa">
+            <img src="assets/reagent_giemsa.png" alt="Giemsa" />
+            <span>Краситель Giemsa</span>
+          </div>
         </div>
       </aside>
 
       <!-- Центральная область: лабораторный стол -->
       <section class="lab-area">
-        <h2>Лабораторный стол</h2>
+        <div class="lab-background">
+          <img src="assets/lab_bg.jpg" alt="Лабораторный стол" />
+        </div>
+
         <div class="workbench">
-          <div class="drop-zone tube" id="tube-sample" data-drop-target="sample_tube">
-            Пробирка для образца
-          </div>
-          <div class="drop-zone tube" id="tube-culture" data-drop-target="culture_tube">
-            Пробирка с культурой
-          </div>
-          <div class="drop-zone" id="slide-area" data-drop-target="slide_area">
-            Зона предметного стекла
-          </div>
-          <div class="drop-zone" id="stain-area" data-drop-target="stain_area">
-            Зона окраски
+          <!-- Зона пробирки -->
+          <div class="drop-zone tube-zone highlight-target"
+               id="sample-tube-zone"
+               data-drop-target="sample-tube">
+            <img src="assets/tube_sample.png" alt="Пробирка" />
+            <span>Пробирка с клетками</span>
           </div>
 
-          <div class="equipment incubator" data-device-id="incubator" data-action-id="use_incubator">
-            Инкубатор
+          <!-- Оборудование -->
+          <button class="equipment incubator highlight-target"
+                  data-device-id="incubator"
+                  id="incubator-btn">
+            <img src="assets/incubator.png" alt="Инкубатор" />
+            <span>Инкубатор</span>
+          </button>
+
+          <button class="equipment centrifuge"
+                  data-device-id="centrifuge"
+                  id="centrifuge-btn">
+            <img src="assets/centrifuge.png" alt="Центрифуга" />
+            <span>Центрифуга</span>
+          </button>
+
+          <button class="equipment microscope"
+                  data-device-id="microscope"
+                  id="microscope-btn">
+            <img src="assets/microscope.png" alt="Микроскоп" />
+            <span>Микроскоп</span>
+          </button>
+
+          <!-- Зона стекла -->
+          <div class="drop-zone slide-zone"
+               id="slide-zone"
+               data-drop-target="slide">
+            <span>Предметное стекло</span>
           </div>
-          <div class="equipment centrifuge" data-device-id="centrifuge" data-action-id="use_centrifuge">
-            Центрифуга
-          </div>
-          <div class="equipment microscope" data-device-id="microscope" data-action-id="use_microscope">
-            Микроскоп
+
+          <!-- Зона красителя -->
+          <div class="drop-zone stain-zone"
+               id="stain-zone"
+               data-drop-target="stain">
+            <span>Зона окрашивания</span>
           </div>
         </div>
 
@@ -83,90 +140,66 @@
         </div>
       </section>
 
-      <!-- Правая колонка: протокол и подсказки -->
+      <!-- Правая панель: подсказки и ошибки -->
       <aside class="sidebar right">
-        <h2>Текущий этап</h2>
-        <div id="current-step-name" class="step-title"></div>
-        <p id="current-step-description" class="step-description"></p>
+        <h3>Подсказки</h3>
+        <p id="step-hint">
+          Аккуратно следуйте протоколу. Если вы ошибётесь, система подскажет, что не так.
+        </p>
+        <button id="show-hint" class="btn btn-secondary">Показать подсказку к этапу</button>
 
-        <button class="btn secondary" id="hint-button">Показать подсказку</button>
-        <button class="btn secondary" id="repeat-step-button">Повторить этап</button>
-
-        <div class="hint-panel" id="hint-panel"></div>
+        <div class="feedback" id="feedback-box"></div>
       </aside>
     </section>
   </main>
 
-  <!-- Модальное окно микроскопа / метафазной пластинки -->
+  <!-- Модальное окно микроскопа (метафазная пластинка) -->
   <div id="microscope-modal" class="modal hidden">
     <div class="modal-content">
-      <span class="close-modal" data-close-modal>&times;</span>
+      <button class="modal-close" data-close-modal="microscope-modal">&times;</button>
       <h2>Метафазная пластинка</h2>
-      <div class="modal-body">
-        <div class="metaphase-image-placeholder">
-          (Здесь может быть реальное изображение метафазной пластинки для варианта:
-          <span id="case-formula-display"></span>)
-        </div>
-      </div>
-      <button class="btn primary" id="proceed-to-karyotype">Перейти к сборке кариотипа</button>
+      <img id="metaphase-image" src="" alt="Метафазная пластинка" />
+      <p>Наблюдайте метафазы, затем переходите к сборке кариотипа и постановке диагноза.</p>
+      <button id="proceed-to-karyotype" class="btn btn-primary">
+        Перейти к кариотипу
+      </button>
     </div>
   </div>
 
-  <!-- Модальное окно сборки кариотипа и постановки диагноза -->
+  <!-- Модальное окно кариотипа и диагноза -->
   <div id="karyotype-modal" class="modal hidden">
     <div class="modal-content">
-      <span class="close-modal" data-close-modal>&times;</span>
-      <h2>Сбор кариотипа и постановка диагноза</h2>
-      <div class="modal-body modal-body-karyotype">
-        <div class="karyotype-builder">
-          <p class="small">
-            Для упрощения здесь показаны условные «хромосомы». В реальной версии можно подставить
-            изображения и реализовать полный пазл.
-          </p>
-          <div class="chromosome-pool" id="chromosome-pool">
-            <!-- Хромосомы будут сгенерированы JS -->
-          </div>
-          <div class="karyotype-grid" id="karyotype-grid">
-            <!-- Ячейки для пар хромосом (1–23) будут сгенерированы JS -->
-          </div>
-        </div>
-
-        <form id="diagnosis-form" class="diagnosis-form">
-          <label>
-            Цитогенетическая формула:
-            <input type="text" name="formula" placeholder="Например: 47,XY,+21" required />
-          </label>
-          <label>
-            Диагноз:
-            <select name="diagnosis" required>
-              <option value="">Выберите вариант</option>
-              <option value="normal">Норма</option>
-              <option value="trisomy21">Трисомия 21 (синдром Дауна)</option>
-              <option value="trisomy18">Трисомия 18 (синдром Эдвардса)</option>
-              <option value="trisomy13">Трисомия 13 (синдром Патау)</option>
-            </select>
-          </label>
-          <button type="submit" class="btn primary">Проверить диагноз</button>
-        </form>
-
-        <div id="diagnosis-feedback" class="diagnosis-feedback"></div>
+      <button class="modal-close" data-close-modal="karyotype-modal">&times;</button>
+      <h2>Кариотип и диагноз</h2>
+      <div class="karyotype-view">
+        <img id="karyotype-image" src="" alt="Кариотип" />
       </div>
+      <form id="diagnosis-form">
+        <label>
+          Цитогенетическая формула:
+          <input type="text" name="formula" id="diagnosis-formula"
+                 placeholder="Например: 47,XY,+21" required />
+        </label>
+        <label>
+          Диагноз:
+          <select name="diagnosis" id="diagnosis-select" required>
+            <option value="">Выберите вариант</option>
+            <option value="normal">Норма</option>
+            <option value="trisomy21">Трисомия 21 (Дауна)</option>
+            <option value="trisomy18">Трисомия 18 (Эдвардса)</option>
+            <option value="trisomy13">Трисомия 13 (Патау)</option>
+          </select>
+        </label>
+        <button type="submit" class="btn btn-primary">Проверить диагноз</button>
+      </form>
+      <div id="diagnosis-feedback" class="feedback"></div>
     </div>
   </div>
 
-  <!-- Модальное окно ошибок -->
-  <div id="error-modal" class="modal hidden">
-    <div class="modal-content">
-      <span class="close-modal" data-close-modal>&times;</span>
-      <h2>Ошибка в последовательности действий</h2>
-      <div id="error-message"></div>
-      <p id="error-explanation" class="small"></p>
-      <button class="btn secondary" id="error-close-button">Понятно</button>
-    </div>
-  </div>
-
-  <footer class="footer">
-    <span>© Медицинский университет — виртуальная лаборатория по кариотипированию</span>
+  <footer class="main-footer">
+    <p>© Виртуальная лаборатория по кариотипированию</p>
   </footer>
+
+  <script src="simulation.js"></script>
 </body>
 </html>
